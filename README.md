@@ -1,5 +1,6 @@
 # Midas
-Shell script to install a [Midas Masternode](https://midas.investments/) on a Linux server running Ubuntu 16.04. Use it on your own risk.
+Shell script to install or update a [Midas Masternode](https://midas.investments/) on a Linux server running Ubuntu 16.04. Use it on your own risk.
+This script will install or update an existing node.
 ***
 
 ## Installation
@@ -53,6 +54,9 @@ systemctl is-enabled Midas #To check if Midas service is enabled on boot
 ```
 ***
 
+## Limitations:
+If you are running multiple **MIDAS nodes** on a server, make sure you stop all of them before updating.
+***
 
 ## Donations
 

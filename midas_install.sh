@@ -6,11 +6,12 @@ CONFIGFOLDER='/root/.midas'
 COIN_DAEMON='midasd'
 COIN_CLI='midas-cli'
 COIN_PATH='/usr/local/bin/'
-COIN_TGZ='https://github.com/mikeifomin/midas_coin/releases/download/v1.2.8/midas-1.2.8-x86_64-linux-gnu.tar.gz'
+COIN_TGZ='https://github.com/mikeifomin/midas_coin/releases/download/v1.2.10/midas-1.2.10-x86_64-linux-gnu.tar.gz'
 COIN_ZIP=$(echo $COIN_TGZ | awk -F'/' '{print $NF}')
 COIN_NAME='Midas'
 COIN_PORT=44433
 RPC_PORT=44445
+LATEST_VERSION=1021000
 
 NODEIP=$(curl -s4 api.ipify.org)
 
@@ -19,6 +20,32 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
+function update_node() {
+  echo -e "Checking if ${RED}$COIN_NAME${NC} is already installed and running the lastest version."
+  systemctl daemon-reload
+  sleep 3
+  systemctl start $COIN_NAME.service >/dev/null 2>&1
+  apt -y install jq >/dev/null 2>&1
+  VERSION=$($COIN_PATH$COIN_CLI getinfo 2>/dev/null| jq .version)
+  if [[ "$VERSION" -eq "$LATEST_VERSION" ]]
+  then
+    echo -e "${RED}$COIN_NAME${NC} is already installed and running the lastest version."
+    exit 0
+  elif [[ -z "$VERSION" ]]
+  then
+    echo "Continue with the normal installation"
+  elif [[ "$VERSION" -ne "$LATEST_VERSION" ]]
+  then
+    systemctl stop $COIN_NAME.service >/dev/null 2>&1
+    $COIN_PATH$COIN_CLI stop >/dev/null 2>&1
+    sleep 10 >/dev/null 2>&1
+    rm $COIN_PATH$COIN_DAEMON $COIN_PATH$COIN_CLI >/dev/null 2>&1
+    download_node
+    configure_systemd
+    echo -e "${RED}$COIN_NAME${NC} updated to the latest version!"
+    exit 0
+  fi
+}
 
 function download_node() {
   echo -e "Prepare to download ${GREEN}$COIN_NAME${NC}."
@@ -184,11 +211,6 @@ if [[ $EUID -ne 0 ]]; then
    echo -e "${RED}$0 must be run as root.${NC}"
    exit 1
 fi
-
-if [ -n "$(pidof $COIN_DAEMON)" ] || [ -e "$COIN_DAEMOM" ] ; then
-  echo -e "${RED}$COIN_NAME is already installed.${NC}"
-  exit 1
-fi
 }
 
 function prepare_system() {
@@ -253,6 +275,7 @@ function setup_node() {
 clear
 
 checks
+update_node
 prepare_system
 download_node
 setup_node
