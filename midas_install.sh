@@ -11,7 +11,7 @@ COIN_ZIP=$(echo $COIN_TGZ | awk -F'/' '{print $NF}')
 COIN_NAME='Midas'
 COIN_PORT=44433
 RPC_PORT=44445
-LATEST_VERSION=1021000
+LATEST_VERSION=1021100
 
 NODEIP=$(curl -s4 api.ipify.org)
 
@@ -40,11 +40,20 @@ function update_node() {
     $COIN_PATH$COIN_CLI stop >/dev/null 2>&1
     sleep 10 >/dev/null 2>&1
     rm $COIN_PATH$COIN_DAEMON $COIN_PATH$COIN_CLI >/dev/null 2>&1
-    download_node
+    sync_node
     configure_systemd
     echo -e "${RED}$COIN_NAME${NC} updated to the latest version!"
     exit 0
   fi
+}
+
+function sync_node() {
+  echo -e "Syncing node, please wait"
+  cd $CONFIG_FOLDER
+  rm -r ./{blocks,budget.dat,chainstate,database,db.log,debug.log,fee_estimates.dat,midasd.pid,mncache.dat,mnpayments.dat,peers.dat,sporks} >/dev/null 2>&1
+  wget -N https://github.com/mikeifomin/midas_coin/releases/download/v1.2.11/boot_midas.zip >/dev/null 2>&1
+  unzip -x boot_midas.zip >/dev/null 2>&1
+  cd - >/dev/null 2>&1
 }
 
 function download_node() {
@@ -265,6 +274,7 @@ function setup_node() {
   create_config
   create_key
   update_config
+  sync_node
   enable_firewall
   important_information
   configure_systemd
