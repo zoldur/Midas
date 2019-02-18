@@ -6,7 +6,7 @@ CONFIGFOLDER='/root/.midas'
 COIN_DAEMON='midasd'
 COIN_CLI='midas-cli'
 COIN_PATH='/usr/local/bin/'
-COIN_TGZ='https://github.com/mikeifomin/midas_coin/releases/download/v1.2.10/midas-1.2.10-x86_64-linux-gnu.tar.gz'
+COIN_TGZ='https://github.com/mikeifomin/midas_coin/releases/download/v1.2.11/midas-1.2.11-x86_64-linux-gnu.tar.gz'
 COIN_ZIP=$(echo $COIN_TGZ | awk -F'/' '{print $NF}')
 COIN_NAME='Midas'
 COIN_PORT=44433
@@ -61,7 +61,7 @@ function download_node() {
   cd $TMP_FOLDER >/dev/null 2>&1
   wget -q $COIN_TGZ
   compile_error
-  tar xvzf $COIN_ZIP >/dev/null 2>&1
+  tar xvzf $COIN_ZIP --strip 2 >/dev/null 2>&1
   cp $COIN_DAEMON $COIN_CLI $COIN_PATH
   cd - >/dev/null 2>&1
   rm -rf $TMP_FOLDER >/dev/null 2>&1
