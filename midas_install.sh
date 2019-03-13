@@ -6,12 +6,12 @@ CONFIGFOLDER='/root/.midas'
 COIN_DAEMON='midasd'
 COIN_CLI='midas-cli'
 COIN_PATH='/usr/local/bin/'
-COIN_TGZ='https://github.com/mikeifomin/midas_coin/releases/download/v1.2.11/midas-1.2.11-x86_64-linux-gnu.tar.gz'
+COIN_TGZ='https://github.com/mikeifomin/midas_coin/releases/download/v1.3.0/midas-1.3.0-x86_64-linux-gnu.tgz'
 COIN_ZIP=$(echo $COIN_TGZ | awk -F'/' '{print $NF}')
 COIN_NAME='Midas'
 COIN_PORT=44433
 RPC_PORT=44445
-LATEST_VERSION=1021100
+LATEST_VERSION=1030000
 
 NODEIP=$(curl -s4 api.ipify.org)
 
@@ -48,11 +48,11 @@ function update_node() {
 }
 
 function sync_node() {
-  echo -e "Syncing node, please wait"
+  echo -e "Syncing node. This could take a long time, so grab some beers and wait patiently."
   cd $CONFIG_FOLDER
   rm -r ./{blocks,budget.dat,chainstate,database,db.log,debug.log,fee_estimates.dat,midasd.pid,mncache.dat,mnpayments.dat,peers.dat,sporks} >/dev/null 2>&1
-  wget -N https://github.com/mikeifomin/midas_coin/releases/download/v1.2.11/boot_midas.zip >/dev/null 2>&1
-  unzip -x boot_midas.zip >/dev/null 2>&1
+  wget -N https://github.com/mikeifomin/midas_coin/releases/download/v1.3.0/boot_midas_111000blocks.zip >/dev/null 2>&1
+  unzip -x boot_midas_111000blocks.zip >/dev/null 2>&1
   cd - >/dev/null 2>&1
 }
 
